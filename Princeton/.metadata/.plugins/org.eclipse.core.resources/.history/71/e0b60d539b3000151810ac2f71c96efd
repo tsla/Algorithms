@@ -1,0 +1,249 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+public class KdTree {
+
+    private Node root;
+    private int mSize = 0;
+    private List<Point2D> flatList = new ArrayList<Point2D>();
+
+    public KdTree() {
+
+    }
+
+    private class Node {
+    	// true -> compare x value, false -> compare y value
+        private boolean xOry; 
+
+        private Point2D point;
+        private Node left;
+        private Node right;
+    }
+
+    public boolean isEmpty() {
+        return (mSize == 0);
+    }
+
+    public int size() {
+        return mSize;
+    }
+
+    public void insert(Point2D p) {
+        if (p == null)
+            throw new NoSuchElementException();
+        
+        if (contains(p))
+        	return;
+        
+        flatList.add(p);
+        
+        if (root == null) {
+            root = new Node();
+            root.point = p;
+            root.left = new Node();
+            root.right = new Node();
+            root.xOry = false;
+        } 
+        else {
+            Node cur = root;
+            boolean xOry = true;
+            
+            double px = p.x();
+            double py = p.y();
+            while (true) {
+                if (xOry) { // Level compared by x
+                    if (px < cur.point.x())
+                        cur = cur.left;
+                    else
+                        cur = cur.right;
+                } 
+                else { // Level compared by y
+                    if (py < cur.point.y())
+                        cur = cur.left;
+                    else
+                        cur = cur.right;
+                }
+
+                if (cur.point == null) {
+                    cur.point = p;
+                    cur.left = new Node();
+                    cur.right = new Node();
+                    cur.xOry = xOry;
+                    break;
+                } else {
+                    xOry = !xOry;
+                }
+            }
+        }
+
+        mSize++;
+    }
+
+    public boolean contains(Point2D p) {
+        if (p == null)
+            throw new NoSuchElementException();
+        if (root == null)
+        	return false;
+        Node cur = root;
+       
+        return containsHelper(cur, p.x(), p.y());
+    }
+
+    private boolean containsHelper(Node n, double x, double y) {
+        if (n.point == null)
+            return false;
+        
+        double nx = n.point.x();
+        double ny = n.point.y();
+        
+        if (nx == x && ny == y)
+            return true;
+
+        else if (!n.xOry) {
+            if (x < nx && n.left.point != null)
+                return containsHelper(n.left, x, y);
+
+            if (x >= nx && n.right.point != null)
+                return containsHelper(n.right, x, y);
+        } else {
+            if (y < ny && n.left.point != null)
+                return containsHelper(n.left, x, y);
+
+            if (y >= n.point.y() && n.right.point != null)
+                return containsHelper(n.right, x, y);
+        }
+
+        return false;
+    }
+
+    public void draw() {
+        for (Point2D s : flatList) {
+            s.draw();
+        }
+    }
+
+    public Iterable<Point2D> range(RectHV rect) {
+        final RectHV mRect = rect;
+        if (mRect == null)
+            throw new NoSuchElementException();
+
+        return new Iterable<Point2D>() {
+
+            private List<Point2D> set = new ArrayList<Point2D>();;
+
+            @Override
+            public Iterator<Point2D> iterator() {
+                // TODO Auto-generated method stub
+
+                Node cur = root;
+
+                if (cur.point != null)
+                    set.addAll(rangeHelper(cur, mRect));
+
+                return set.iterator();
+            }
+        };
+    }
+
+    private List<Point2D> rangeHelper(Node n, RectHV rect) {
+        List<Point2D> ret = new ArrayList<Point2D>();
+
+        // * Note lies on rectangle -> search both sides of nodes (up & down OR
+        // left & right)
+        if (rect.contains(n.point)) {
+            ret.add(n.point);
+
+            // Check left/bottom
+            if (n.left.point != null)
+                ret.addAll(rangeHelper(n.left, rect));
+
+            // Check right/bottom
+            if (n.right.point != null)
+                ret.addAll(rangeHelper(n.right, rect));
+        } else {
+            // * Note does not lie on rectangle, there's a posibility that just
+            // need to search for one side
+
+            if (n.xOry) // Horizontal line
+            {
+            	double y = n.point.y();
+            	// Rect above the point -> Search right
+                if (y <= rect.ymax() && n.right.point != null) 
+                    ret.addAll(rangeHelper(n.right, rect));
+                // Rect below the point -> Search left
+                if (y >= rect.ymin() && n.left.point != null) 
+                    ret.addAll(rangeHelper(n.left, rect));
+
+            } else // Verticle line
+            {
+            	double x = n.point.x();
+                // Rect to the right of point -> Search right
+                if (x <= rect.xmax() && n.right.point != null)
+                    ret.addAll(rangeHelper(n.right, rect));
+                // Rect to the left of point -> Search left
+                if (x >= rect.xmin() && n.left.point != null) 
+                    ret.addAll(rangeHelper(n.left, rect));
+
+            }
+        }
+
+        return ret;
+    }
+
+    public Point2D nearest(Point2D p) {
+        if (p == null)
+            throw new NoSuchElementException();
+
+        Node cur = root;
+        Point2D bestPoint = cur.point;
+        Point2D ret = nearestHelper(cur, p, bestPoint);
+
+        return ret;
+    }
+
+    private Point2D nearestHelper(Node n, Point2D p, Point2D best) {
+        if (n.point == null)
+            return best;
+
+        if (p.distanceTo(n.point) < p.distanceTo(best)) {
+            best = n.point;
+        }
+
+        best = nearestHelper(n.left, p, best);
+        best = nearestHelper(n.right, p, best);
+
+        return best;
+    }
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        KdTree tree = new KdTree();
+
+        tree.insert(new Point2D(0.7, 0.2));
+        /*tree.insert(new Point2D(0.5, 0.4));
+        tree.insert(new Point2D(0.2, 0.3));
+        tree.insert(new Point2D(0.4, 0.7));
+        tree.insert(new Point2D(0.9, 0.6));*/
+        System.out.println(tree.root.right.point);
+
+        /*
+         * for (Node n : tree.flat()) { System.out.print(n.point + "  "); if
+         * (n.xOry) System.out.println("--"); else System.out.println("|"); }
+         * 
+         * RectHV rect = new RectHV(0.15, 0.25, 0.8, 0.45);
+         * 
+         * StdDraw.setPenColor(StdDraw.BLACK); StdDraw.setPenRadius(.01);
+         * tree.draw();
+         * 
+         * StdDraw.setPenColor(StdDraw.BLUE); StdDraw.setPenRadius(.002);
+         * rect.draw();
+         * 
+         * 
+         * StdDraw.setPenColor(StdDraw.BOOK_RED); StdDraw.setPenRadius(.02);
+         * 
+         * for (Point2D p : tree.range(rect)) { p.draw(); }
+         */
+    }
+}

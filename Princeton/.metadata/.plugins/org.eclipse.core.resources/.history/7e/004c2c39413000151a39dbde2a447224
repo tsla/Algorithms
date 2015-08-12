@@ -1,0 +1,175 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import BST.Node;
+
+public class KdTree {
+	
+	private Node root;
+	private int _size = 0;
+	
+	
+	private class Node
+	{
+		private boolean xOry; // true -> compare x value, false -> compare y value
+		private Point2D point;
+		private Node left = null;
+		private Node right = null;
+	}
+	
+	public KdTree()
+	{
+		
+	}
+	
+	public boolean isEmpty()
+	{
+		return (_size == 0);
+	}
+	
+	public int size()
+	{
+		return _size;
+	}
+	
+	public void insert(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		if (root == null)
+		{
+			root = new Node();
+			root.point = p;
+			root.xOry = true;
+			
+		}
+		else
+		{
+			boolean xOry = false;
+			
+			Node cur = root;
+			
+			while (true)
+			{
+				if (xOry)
+				{
+					if (p.x() < cur.point.x())
+						cur = cur.left;
+					else
+						cur = cur.right;
+				}
+				else
+				{
+					if (p.y() < cur.point.y())
+						cur = cur.left;
+					else
+						cur = cur.right;
+				}
+				
+				if (cur == null)
+				{
+					cur.point = p;
+					cur.xOry = !xOry;
+					break;
+				}
+				else
+				{
+					xOry = !xOry;
+				}
+					
+			}
+		}
+		
+		_size++;
+	}
+	
+	public boolean contains(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		return false;
+	}
+	
+	public void draw()
+	{
+		int i = _size;
+		Node cur = root;
+		
+		while (i-- > 0)
+		{
+			if (cur.left)
+		}
+	}
+	
+	public Iterable<Point2D> range(RectHV rect)
+	{
+		final RectHV mRect =  rect;
+		if (mRect == null)
+			throw new NoSuchElementException();
+		
+		return new Iterable<Point2D>() {
+			
+			private SET<Point2D> set;
+						
+			@Override
+			public Iterator<Point2D> iterator() {
+				// TODO Auto-generated method stub
+				
+				set = new SET<Point2D>();
+				
+				for (Point2D p : points)
+				{
+					if (mRect.contains(p)){
+						set.add(p);
+					}
+				}
+				
+				return set.iterator();
+			}
+		};
+	}
+	
+	
+	public Point2D nearest(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		Point2D ret = null;
+		double dist = 1000;
+		
+		for (Point2D mp : points)
+		{
+			if (mp.distanceTo(p) < dist)
+			{
+				ret = mp;
+				dist = mp.distanceTo(p);
+			}
+		}
+		
+		return ret;
+	}
+	
+	 // level order traversal
+    public Iterable<Key> levelOrder() {
+        Queue<Key> keys = new Queue<Key>();
+        Queue<Node> queue = new Queue<Node>();
+        queue.enqueue(root);
+        while (!queue.isEmpty()) {
+            Node x = queue.dequeue();
+            if (x == null) continue;
+            keys.enqueue(x.key);
+            queue.enqueue(x.left);
+            queue.enqueue(x.right);
+        }
+        return keys;
+    }
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		
+	}
+}

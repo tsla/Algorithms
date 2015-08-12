@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.lang.Override"/>
+<fullyQualifiedTypeName name="java.lang.Comparable"/>
+<fullyQualifiedTypeName name="Board"/>
+<fullyQualifiedTypeName name="Solver.BoardIteratble"/>
+<fullyQualifiedTypeName name="Solver.SearchNode"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="java.util.NoSuchElementException"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="SET"/>
+<fullyQualifiedTypeName name="PointSET"/>
+<fullyQualifiedTypeName name="RectHV"/>
+<fullyQualifiedTypeName name="java.lang.Iterable"/>
+<fullyQualifiedTypeName name="java.util.Set"/>
+<fullyQualifiedTypeName name="java.awt.Robot"/>
+<fullyQualifiedTypeName name="Point2D"/>
+<fullyQualifiedTypeName name="KdTree.Node"/>
+</qualifiedTypeNameHistroy>

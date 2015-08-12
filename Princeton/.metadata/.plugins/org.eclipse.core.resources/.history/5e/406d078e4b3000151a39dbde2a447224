@@ -1,0 +1,201 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+
+public class KdTree {
+	
+	private Node root;
+	private int _size = 0;
+	List<Point2D> flat_tree = new ArrayList<Point2D>();
+	
+	private class Node
+	{
+		private boolean xOry; // true -> compare x value, false -> compare y value
+		private Point2D point;
+		private Node left;
+		private Node right;
+	}
+	
+	public KdTree()
+	{
+		
+	}
+	
+	public boolean isEmpty()
+	{
+		return (_size == 0);
+	}
+	
+	public int size()
+	{
+		return _size;
+	}
+	
+	private boolean xOry = true;
+	public void insert(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		flat_tree.add(p);
+		
+		if (root == null)
+		{
+			root = new Node();
+			root.point = p;
+			root.left = new Node();
+			root.right = new Node();
+			root.xOry = true;
+		}
+		else
+		{
+			Node cur = root;
+			
+			while (true)
+			{
+				if (xOry)
+				{
+					if (p.x() < cur.point.x())
+						cur = cur.left;
+					else
+						cur = cur.right;
+				}
+				else
+				{
+					if (p.y() < cur.point.y())
+						cur = cur.left;
+					else
+						cur = cur.right;
+				}
+				
+				if (cur.point == null)
+				{
+					cur.point = p;
+					cur.left = new Node();
+					cur.right = new Node();
+					cur.xOry = !xOry;
+					break;
+				}
+				else
+				{
+					xOry = !xOry;
+				}
+			}
+		}
+		
+		_size++;
+	}
+	
+	public boolean contains(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		return false;
+	}
+	
+	public void draw()
+	{
+		for (Point2D s : flat_tree)
+		{
+			s.draw();
+		}
+	}
+	
+	public Iterable<Point2D> range(RectHV rect)
+	{
+		final RectHV mRect =  rect;
+		if (mRect == null)
+			throw new NoSuchElementException();
+		
+		return new Iterable<Point2D>() {
+			
+			private SET<Point2D> set = new SET<Point2D>();;
+						
+			@Override
+			public Iterator<Point2D> iterator() {
+				// TODO Auto-generated method stub
+				
+				Node cur = root;
+				
+				// Check node lies in rectangle
+				
+				// Search left/bottom
+				
+				// Search right/top
+				
+				
+				return set.iterator();
+			}
+		};
+	}
+	
+	
+	private SET<Point2D> search(Node n, RectHV rect)
+	{
+		SET<Point2D> ret = new SET<Point2D>();
+		
+		//Check current node exist
+		if (rect.contains(p))
+		
+		//Check left/bottom
+		
+		//Check right/bottom
+		
+		//merge three set
+		
+		
+		return ret;
+	}
+	
+	public Point2D nearest(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		Point2D ret = null;
+		
+		return ret;
+	}
+	
+	 // level order traversal
+	private List<Node> nodes = new ArrayList<Node>();
+    private List<Node> flat() {
+    	
+    	if (root != null)
+    	{
+    		helper(root);
+    	}
+    	
+    	return nodes;
+    }
+    
+    private void helper(Node p)
+    {
+    	if (p.left.point != null)
+    		helper(p.left);
+    	
+    	nodes.add(p);
+    	
+    	if (p.right.point != null)
+    		helper(p.right);
+    		
+    }
+    
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		KdTree tree = new KdTree();
+		
+		tree.insert(new Point2D(0.1,  0.1));
+		tree.insert(new Point2D(0.5,  0.4));
+		tree.insert(new Point2D(0.2,  0.2));
+		tree.insert(new Point2D(0.5,  0.8));
+		
+		StdDraw.setPenColor(StdDraw.BOOK_RED);
+        StdDraw.setPenRadius(.02);
+		tree.draw();
+		
+	}
+}

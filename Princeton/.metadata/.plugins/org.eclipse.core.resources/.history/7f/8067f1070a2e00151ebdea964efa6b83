@@ -1,0 +1,96 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class PointSET {
+	
+	private SET<Point2D> points;
+	
+	public PointSET()
+	{
+		points = new SET<Point2D>();
+	}
+	
+	public boolean isEmpty()
+	{
+		return points.isEmpty();
+	}
+	
+	public int size()
+	{
+		return points.size();
+	}
+	
+	public void insert(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		points.add(p);
+	}
+	
+	public boolean contains(Point2D p)
+	{
+		if (p == null)
+			throw new NoSuchElementException();
+		
+		return points.contains(p);
+	}
+	
+	public void draw()
+	{
+		for (Point2D p : points)
+		{
+			System.out.println(p);
+			p.draw();
+		}
+	}
+	
+	public Iterable<Point2D> range(RectHV rect)
+	{
+		final RectHV mRect =  rect;
+		if (mRect == null)
+			throw new NoSuchElementException();
+		
+		return new Iterable<Point2D>() {
+			
+			private SET<Point2D> set;
+						
+			@Override
+			public Iterator<Point2D> iterator() {
+				// TODO Auto-generated method stub
+				
+				set = new SET<Point2D>();
+				
+				for (Point2D p : points)
+				{
+					if (mRect.contains(p)){
+						set.add(p);
+					}
+				}
+				
+				return set.iterator();
+			}
+		};
+	}
+	
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		PointSET ps = new PointSET();
+		ps.insert(new Point2D(200, 200));
+		ps.insert(new Point2D(300, 300));
+		ps.insert(new Point2D(20, 20));
+		
+		StdDraw.setPenRadius(2);
+		StdDraw.setPenColor(StdDraw.BOOK_RED);
+        
+		ps.draw();
+		
+		Point2D p = new Point2D(200, 300);
+		Point2D p2 = new Point2D(10, 10);
+		StdDraw.point(20, 300);
+	}
+
+}
